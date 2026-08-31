@@ -1,4 +1,4 @@
-# Thermals
+# ![alt text](image.png)
 
 A minimal [Omarchy](https://omarchy.org/) bar widget showing CPU/GPU temperatures,
 with a click panel for CPU/GPU temps and fan speeds.
