@@ -63,7 +63,7 @@ Panel {
             { label: "CPU Temp", value: root.w ? root.w.cpuTemp + " °C" : "-" },
             { label: "CPU Fan", value: root.w && root.w.cpuFan !== "-" ? root.w.cpuFan + " RPM" : "n/a" },
             { label: "GPU Temp", value: root.w ? root.w.gpuTemp + " °C" : "-" },
-            { label: "GPU Fan", value: root.w && root.w.gpuFan !== "-" ? root.w.gpuFan + " RPM" : "n/a" }
+            { label: "GPU Fan", value: root.w && root.w.gpuFan !== "-" ? root.w.gpuFan + " %" : "n/a" }
           ]
 
           delegate: RowLayout {

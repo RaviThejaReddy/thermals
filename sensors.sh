@@ -42,19 +42,24 @@ CPU_TEMP_DEV=""; GPU_DEV=""; FAN_DEV=""; USE_NVIDIA_SMI=0
 [ -n "$(hwmon_by_name k10temp)" ] && CPU_TEMP_DEV=$(hwmon_by_name k10temp)
 [ -z "$CPU_TEMP_DEV" ] && [ -n "$(hwmon_by_name coretemp)" ] && CPU_TEMP_DEV=$(hwmon_by_name coretemp)
 [ -z "$CPU_TEMP_DEV" ] && [ -n "$(hwmon_by_name zenpower)" ] && CPU_TEMP_DEV=$(hwmon_by_name zenpower)
-for d in /sys/class/hwmon/hwmon*; do
-  name=$(cat "$d/name" 2>/dev/null)
-  if [ "$name" = "amdgpu" ] || [ "$name" = "nouveau" ]; then
-    if [ -f "$d/temp1_input" ]; then GPU_DEV="$d"; break; fi
-  fi
-done
+
 # Prefer nvidia-smi for NVIDIA GPUs if available
-if [ -z "$GPU_DEV" ] && command -v nvidia-smi >/dev/null 2>&1; then
+if command -v nvidia-smi >/dev/null 2>&1; then
   if nvidia-smi >/dev/null 2>&1; then
     USE_NVIDIA_SMI=1
   fi
 fi
-[ -z "$GPU_DEV" ] && [ "$USE_NVIDIA_SMI" = "0" ] && [ -n "$(hwmon_by_name nvidia)" ] && GPU_DEV=$(hwmon_by_name nvidia)
+
+# Fall back to hwmon GPU detection if nvidia-smi not available
+if [ "$USE_NVIDIA_SMI" = "0" ]; then
+  for d in /sys/class/hwmon/hwmon*; do
+    name=$(cat "$d/name" 2>/dev/null)
+    if [ "$name" = "amdgpu" ] || [ "$name" = "nouveau" ]; then
+      if [ -f "$d/temp1_input" ]; then GPU_DEV="$d"; break; fi
+    fi
+  done
+  [ -z "$GPU_DEV" ] && [ -n "$(hwmon_by_name nvidia)" ] && GPU_DEV=$(hwmon_by_name nvidia)
+fi
 FAN_DEV=$(find_fan_dev)
 
 snapshot() {
@@ -80,7 +85,7 @@ snapshot() {
     [ -n "$f" ] && cpu_fan=$(read_rpm "$f")
   fi
 
-  echo "$cpu_temp $gpu_temp $gpu_fan $cpu_fan"
+  echo "cpu temp: $cpu_temp gpu temp: $gpu_temp gpu fan: $gpu_fan cpu fan: $cpu_fan"
 }
 
 snapshot
