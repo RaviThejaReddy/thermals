@@ -85,7 +85,7 @@ snapshot() {
     [ -n "$f" ] && cpu_fan=$(read_rpm "$f")
   fi
 
-  echo "cpu temp: $cpu_temp gpu temp: $gpu_temp gpu fan: $gpu_fan cpu fan: $cpu_fan"
+  echo "$cpu_temp $gpu_temp $gpu_fan $cpu_fan"
 }
 
 snapshot
