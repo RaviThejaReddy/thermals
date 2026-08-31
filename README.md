@@ -10,7 +10,10 @@ with a click panel for CPU/GPU temps and fan speeds.
 - Bar shows live `CPU 48°  GPU 39°` (slow 10s poll)
 - Click to open a panel with CPU temp, CPU fan, GPU temp, GPU fan (2s poll while open)
 - One persistent collector process streams readings — no per-tick process spawning
-- Reads `/sys/class/hwmon` directly (k10temp/zenpower/coretemp for CPU; amdgpu/nouveau/nvidia for GPU; ITE/Nuvoton super-IO chips for board fans)
+- Reads temperatures and fan speeds:
+  - **CPU temp**: `/sys/class/hwmon` (k10temp/zenpower/coretemp)
+  - **GPU temp & fan**: Prioritizes `nvidia-smi` for NVIDIA GPUs if available; falls back to `/sys/class/hwmon` (amdgpu/nouveau/nvidia)
+  - **Board fans**: ITE/Nuvoton super-IO chips (via hwmon)
 - Works best with the `it87` driver on Gigabyte boards (`it87-dkms-git` from AUR, with `ignore_resource_conflict=1`)
 
 ## Install
